@@ -48,7 +48,7 @@ public class CommandsTest {
     // ================= update key tests =================
 
     @Test
-    public void test_readKey_noSuchDb() {
+    public void test_readKey_noSuchDb() throws DatabaseException {
         when(env.getDatabase(DB_NAME)).thenReturn(Optional.empty());
 
         Command command = Command.builder()
@@ -99,7 +99,7 @@ public class CommandsTest {
     // ================= update key tests =================
 
     @Test
-    public void test_updateKey_noSuchDb() {
+    public void test_updateKey_noSuchDb() throws DatabaseException {
         when(env.getDatabase(DB_NAME)).thenReturn(Optional.empty());
 
         Command command = Command.builder()
@@ -152,7 +152,7 @@ public class CommandsTest {
     // ================= create table tests =================
 
     @Test
-    public void test_createTable_noSuchDb() {
+    public void test_createTable_noSuchDb() throws DatabaseException {
         when(env.getDatabase(DB_NAME)).thenReturn(Optional.empty());
 
         Command command = Command.builder()
@@ -199,13 +199,13 @@ public class CommandsTest {
     }
 
     @Test
-    public void test_executeNext_noCommandName() {
+    public void test_executeNext_noCommandName() throws DatabaseException {
         DatabaseCommandResult databaseCommandResult = server.executeNextCommand(null);
         assertEquals(FAILED, databaseCommandResult.getStatus());
     }
 
     @Test
-    public void test_executeNext_noCommandFound() {
+    public void test_executeNext_noCommandFound() throws DatabaseException {
         DatabaseCommandResult databaseCommandResult = server.executeNextCommand("fake_command_name");
         assertEquals(FAILED, databaseCommandResult.getStatus());
     }
