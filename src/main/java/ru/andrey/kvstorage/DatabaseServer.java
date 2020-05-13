@@ -20,14 +20,14 @@ public class DatabaseServer {
 
     DatabaseCommandResult executeNextCommand(String commandText) throws DatabaseException {
         if (commandText == null) {
-            return new FakeCommand().execute();
+            return DatabaseCommandResult.error("Command not set.");
         } else {
             String[] args = commandText.split(" ");
             try {
                 DatabaseCommandResult result = DatabaseCommands.valueOf(args[0]).getCommand(env, args).execute();
                 return result;
             } catch (IllegalArgumentException e) {
-                return new FakeCommand().execute();
+                return DatabaseCommandResult.error(e.getMessage());
             }
         }
     }

@@ -9,7 +9,8 @@ import ru.andrey.kvstorage.logic.Database;
 public class UpdateKey implements DatabaseCommand {
 
     private static final String RESULT = "Value was created.";
-    private static final String MESSAGE = "Table already exists";
+    private static final String ALREADY_EXISTS = "Table already exists";
+    private static final String DOESNT_EXISTS = "Table doesn't exists";
 
     private ExecutionEnvironment executionEnvironment;
     private String databaseName;
@@ -27,16 +28,15 @@ public class UpdateKey implements DatabaseCommand {
 
     @Override
     public DatabaseCommandResult execute() throws DatabaseException {
-        if (executionEnvironment.getDatabase(databaseName).isPresent()) {
-            Database db = executionEnvironment.getDatabase(databaseName).get();
-            try {
-                db.write(tableName, objectKey, objectValue);
-                return DatabaseCommandResult.success(RESULT);
-            } catch (DatabaseException e) {
-                return DatabaseCommandResult.error(MESSAGE);
-            }
-        } else {
-            return DatabaseCommandResult.error(MESSAGE);
+        if (!executionEnvironment.getDatabase(databaseName).isPresent()) {
+            return DatabaseCommandResult.error(DOESNT_EXISTS);
+        }
+        Database db = executionEnvironment.getDatabase(databaseName).get();
+        try {
+            db.write(tableName, objectKey, objectValue);
+            return DatabaseCommandResult.success(RESULT);
+        } catch (DatabaseException e) {
+            return DatabaseCommandResult.error(ALREADY_EXISTS);
         }
 
     }

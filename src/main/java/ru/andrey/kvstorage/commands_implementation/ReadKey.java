@@ -8,7 +8,8 @@ import ru.andrey.kvstorage.logic.Database;
 
 public class ReadKey implements DatabaseCommand {
 
-    private static final String MESSAGE = "Table already exists";
+    private static final String ALREADY_EXISTS = "Table already exists";
+    private static final String DOESNT_EXISTS = "Table doesn't exists";
 
     private ExecutionEnvironment executionEnvironment;
     private String databaseName;
@@ -24,16 +25,14 @@ public class ReadKey implements DatabaseCommand {
 
     @Override
     public DatabaseCommandResult execute() throws DatabaseException {
-        if (executionEnvironment.getDatabase(databaseName).isPresent()) {
-            Database db = executionEnvironment.getDatabase(databaseName).get();
-            try {
-                DatabaseCommandResult result = DatabaseCommandResult.success(db.read(tableName, objectKey));
-                return result;
-            } catch (DatabaseException e) {
-                return DatabaseCommandResult.error(MESSAGE);
-            }
-        } else {
-            return DatabaseCommandResult.error(MESSAGE);
+        if (!executionEnvironment.getDatabase(databaseName).isPresent()) {
+            return DatabaseCommandResult.error(DOESNT_EXISTS);
+        }
+        Database db = executionEnvironment.getDatabase(databaseName).get();
+        try {
+            return DatabaseCommandResult.success(db.read(tableName, objectKey));
+        } catch (DatabaseException e) {
+            return DatabaseCommandResult.error(ALREADY_EXISTS);
         }
     }
 }

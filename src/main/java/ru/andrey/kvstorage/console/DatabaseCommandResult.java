@@ -17,23 +17,24 @@ public interface DatabaseCommandResult {
     }
 
     static DatabaseCommandResult success(String result) {
-        return new DatabaseCommandResultImplementation(result, null);
+        return new DatabaseCommandResultImplementation(result, null, DatabaseCommandStatus.SUCCESS);
     }
 
     static DatabaseCommandResult error(String message) {
-        return new DatabaseCommandResultImplementation(null, message);
+        return new DatabaseCommandResultImplementation(null, message, DatabaseCommandStatus.FAILED);
     }
 
-    class DatabaseCommandResultImplementation implements ru.andrey.kvstorage.console.DatabaseCommandResult {
+    class DatabaseCommandResultImplementation implements DatabaseCommandResult {
 
         private String result;
         private String message;
+        private DatabaseCommandStatus status;
 
-        DatabaseCommandResultImplementation(String result, String message) {
+        public DatabaseCommandResultImplementation(String result, String message, DatabaseCommandStatus status) {
             this.result = result;
             this.message = message;
+            this.status = status;
         }
-
 
         @Override
         public Optional<String> getResult() {
@@ -42,11 +43,7 @@ public interface DatabaseCommandResult {
 
         @Override
         public DatabaseCommandStatus getStatus() {
-            if (result != null) {
-                return DatabaseCommandStatus.SUCCESS;
-            } else {
-                return DatabaseCommandStatus.FAILED;
-            }
+            return status;
         }
 
         @Override
@@ -56,11 +53,7 @@ public interface DatabaseCommandResult {
 
         @Override
         public String getErrorMessage() {
-            if (message != null) {
-                return message;
-            } else {
-                return null;
-            }
+            return message;
         }
     }
 }

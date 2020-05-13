@@ -6,12 +6,11 @@ import ru.andrey.kvstorage.console.ExecutionEnvironment;
 import ru.andrey.kvstorage.exception.DatabaseException;
 import ru.andrey.kvstorage.logic.Database;
 
-import java.util.Optional;
-
 public class CreateTable implements DatabaseCommand {
 
     private static final String RESULT = "Table was created.";
-    private static final String MESSAGE = "Table already exists";
+    private static final String ALREADY_EXISTS = "Table already exists";
+    private static final String DOESNT_EXISTS = "Table doesn't exists";
 
     private ExecutionEnvironment executionEnvironment;
     private String databaseName;
@@ -25,16 +24,15 @@ public class CreateTable implements DatabaseCommand {
 
     @Override
     public DatabaseCommandResult execute() throws DatabaseException {
-        if (executionEnvironment.getDatabase(databaseName).isPresent()) {
-            Database db = executionEnvironment.getDatabase(databaseName).get();
-            try {
-                db.createTableIfNotExists(tableName);
-                return DatabaseCommandResult.success(RESULT);
-            } catch (DatabaseException e) {
-                return DatabaseCommandResult.error(MESSAGE);
-            }
-        } else {
-            return DatabaseCommandResult.error(MESSAGE);
+        if (!executionEnvironment.getDatabase(databaseName).isPresent()) {
+            return DatabaseCommandResult.error(DOESNT_EXISTS);
+        }
+        Database db = executionEnvironment.getDatabase(databaseName).get();
+        try {
+            db.createTableIfNotExists(tableName);
+            return DatabaseCommandResult.success(RESULT);
+        } catch (DatabaseException e) {
+            return DatabaseCommandResult.error(ALREADY_EXISTS);
         }
     }
 }
